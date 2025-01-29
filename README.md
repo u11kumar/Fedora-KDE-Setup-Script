@@ -1,4 +1,5 @@
 
+---
 
 # Fedora KDE Setup Script 🚀
 
@@ -13,10 +14,10 @@ Perfect for fresh Fedora installations! 🎉
 1. [Repository Structure](#repository-structure-)
 2. [Features](#features-)
 3. [Packages Installed](#packages-installed-)
-4. [How to Use](https://github.com/u11kumar/script-making/blob/main/README.md#how-to-use-%EF%B8%8F)
+4. [How to Use the Script](#how-to-use-the-script-)
 5. [Code Explanation](#code-explanation-)
 6. [GitHub SSH Setup](#github-ssh-setup-)
-7. [Using GNU Stow for Dotfiles](https://github.com/u11kumar/script-making/edit/main/README.md#using-gnu-stow-for-dotfiles-%EF%B8%8F)
+7. [Using GNU Stow for Dotfiles](#using-gnu-stow-for-dotfiles-)
 8. [Suggested New Files](#suggested-new-files-)
 9. [License](#license-)
 
@@ -94,7 +95,7 @@ Perfect for fresh Fedora installations! 🎉
 
 ---
 
-## How to Use 🛠️
+## How to Use the Script 🛠️
 
 ### 1. Clone the Repository
 Clone the repository to your home directory:
@@ -203,3 +204,5 @@ Enjoy your beautifully customized system! 🎉
 ---
 
 Let me know if you’d like further refinements or additional features! 🚀
+
+---
