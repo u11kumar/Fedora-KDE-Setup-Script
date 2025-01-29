@@ -115,6 +115,16 @@ fi
 echo -e "\e[1;34mInstalling Powerlevel10k theme for Zsh...\e[0m"
 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
 
+# Installing Modern Clock for KDE
+# A modern looking clock widget!
+# Clone this repository
+git clone https://github.com/prayag2/kde_modernclock && cd kde_modernclock/
+# Install using the script
+kpackagetool5 -i package
+
+
+
+
 # Update .zshrc with Powerlevel10k Theme
 ZSHRC_FILE="$HOME/.zshrc"
 if [ -f "$ZSHRC_FILE" ]; then
