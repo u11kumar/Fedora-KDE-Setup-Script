@@ -10,7 +10,6 @@ Perfect for fresh Fedora installations! 🎉
 
 ## Repository Structure 📂
 
-
 ```
 ├── Fedora KDE Setup
 │   ├── automted_script.sh          # Main script for Fedora KDE setup
