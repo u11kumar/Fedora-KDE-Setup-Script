@@ -1,6 +1,4 @@
-Here’s a **customized and enhanced version** of your `README.md` file. I’ve reorganized the content, added more details, and suggested creating new files to improve the repository structure. I’ve also included a **Table of Contents** for better navigation.
 
----
 
 # Fedora KDE Setup Script 🚀
 
