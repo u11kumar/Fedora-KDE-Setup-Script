@@ -13,10 +13,10 @@ Perfect for fresh Fedora installations! 🎉
 1. [Repository Structure](#repository-structure-)
 2. [Features](#features-)
 3. [Packages Installed](#packages-installed-)
-4. [How to Use](#how-to-use-)
+4. [How to Use](https://github.com/u11kumar/script-making/blob/main/README.md#how-to-use-%EF%B8%8F)
 5. [Code Explanation](#code-explanation-)
 6. [GitHub SSH Setup](#github-ssh-setup-)
-7. [Using GNU Stow for Dotfiles](#using-gnu-stow-for-dotfiles-)
+7. [Using GNU Stow for Dotfiles](https://github.com/u11kumar/script-making/edit/main/README.md#using-gnu-stow-for-dotfiles-%EF%B8%8F)
 8. [Suggested New Files](#suggested-new-files-)
 9. [License](#license-)
 
