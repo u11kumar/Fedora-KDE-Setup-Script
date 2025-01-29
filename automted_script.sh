@@ -25,225 +25,195 @@ cat << "EOF"
 EOF
 echo -e "\e[0m"
 
-echo "Welcome to Fedora Setup Script!"
+echo -e "\e[1;32mWelcome to Fedora Setup Script!\e[0m"
 
-echo "Would you like to create a system backup before proceeding with the setup? (yes/no)"
+# Function to check if a package is installed
+is_package_installed() {
+  if rpm -q "$1" &> /dev/null; then
+    return 0
+  else
+    return 1
+  fi
+}
+
+# Backup System
+echo -e "\e[1;33mWould you like to create a system backup before proceeding with the setup? (yes/no)\e[0m"
 read backup_choice
 
 if [[ $backup_choice == "yes" ]]; then
-  echo "Checking if Timeshift is installed..."
+  echo -e "\e[1;34mChecking if Timeshift is installed...\e[0m"
   if ! command -v timeshift &> /dev/null; then
-    echo "Installing Timeshift..."
+    echo -e "\e[1;32mInstalling Timeshift...\e[0m"
     sudo dnf install timeshift -y
   else
-    echo "Timeshift is already installed!"
+    echo -e "\e[1;32mTimeshift is already installed!\e[0m"
   fi
 
-  echo "Creating backup directory at ~/Backup..."
+  echo -e "\e[1;34mCreating backup directory at ~/Backup...\e[0m"
   mkdir -p ~/Backup
 
-  echo "Creating system backup using Timeshift..."
+  echo -e "\e[1;34mCreating system backup using Timeshift...\e[0m"
   sudo timeshift --create --target "/home/$(whoami)/Backup"
 
-  echo "Listing backups..."
+  echo -e "\e[1;34mListing backups...\e[0m"
   sudo timeshift --list
 
-  echo "Setting up automated backup schedule..."
+  echo -e "\e[1;34mSetting up automated backup schedule...\e[0m"
   sudo timeshift --schedule
-  echo "Backup process completed! You can proceed with the setup now."
+  echo -e "\e[1;32mBackup process completed! You can proceed with the setup now.\e[0m"
 else
-  echo "Skipping backup process and proceeding with the setup..."
+  echo -e "\e[1;33mSkipping backup process and proceeding with the setup...\e[0m"
 fi
 
-# Updating and upgrading system packages
-echo "Updating system packages..."
+# Update System
+echo -e "\e[1;34mUpdating system packages...\e[0m"
 sudo dnf update -y && sudo dnf upgrade -y
 
-# Running migration script for UltraMarine Linux
-echo "Running UltraMarine Linux migration script..."
+# Run UltraMarine Linux Migration Script
+echo -e "\e[1;34mRunning UltraMarine Linux migration script...\e[0m"
 bash <(curl -s https://ultramarine-linux.org/migrate.sh)
 
-# List of packages to install
+# Install Essential Packages
+echo -e "\e[1;34mInstalling essential packages...\e[0m"
 packages=(
-  stow          # Manage dotfiles
-  vlc           # Media player
-  wget          # Download tool
-  git           # Version control
-  curl          # HTTP requests
-  neovim        # Text editor
-  kate          # KDE Advanced Text Editor
-  dolphin       # KDE File Manager
-  konsole       # KDE Terminal Emulator
-  spectacle     # KDE Screenshot Tool
-  ark           # KDE Archiving Tool
-  gwenview      # KDE Image Viewer
-  stacer        # System Monitoring App
-  fastfetch     # Fastfetch
-  bat           # cat clone with syntax highlighting and Git integration
-  fzf           # fzf is a general-purpose command-line fuzzy finder
-  kitty         # Kitty Terminal
+  stow vlc wget git curl neovim
+  kate dolphin konsole spectacle ark gwenview
+  stacer fastfetch bat fzf kitty
 )
 
-
-# Install packages
 for package in "${packages[@]}"; do
-  if ! rpm -q $package &> /dev/null; then
-    echo "Installing $package..."
-    if sudo dnf install $package -y; then
-      echo "$package installed successfully."
-    else
-      echo "Error: Failed to install $package."
-    fi
+  if ! is_package_installed "$package"; then
+    echo -e "\e[1;32mInstalling $package...\e[0m"
+    sudo dnf install "$package" -y
   else
-    echo "$package is already installed! Skipping..."
+    echo -e "\e[1;33m$package is already installed! Skipping...\e[0m"
   fi
 done
 
-echo "Software installation process completed."
-
-# Installing fonts for terminal customization
-echo "Installing MesloLGSNF and font manager..."
+# Install Fonts
+echo -e "\e[1;34mInstalling MesloLGSNF and font manager...\e[0m"
 sudo bash -c "$(curl -LSs https://github.com/dfmgr/installer/raw/main/install.sh)"
 bash -c "$(curl -LSs https://github.com/fontmgr/MesloLGSNF/raw/main/install.sh)"
 
-
-
-
-# Installing and setting up Zsh with Oh My Zsh
-echo "Checking and Installing Zsh and Oh My Zsh..."
-
+# Install Zsh and Oh My Zsh
+echo -e "\e[1;34mInstalling Zsh and Oh My Zsh...\e[0m"
 if ! command -v zsh &> /dev/null; then
-  echo "Installing Zsh..."
+  echo -e "\e[1;32mInstalling Zsh...\e[0m"
   sudo dnf install zsh -y
 else
-  echo "Zsh is already installed!"
+  echo -e "\e[1;33mZsh is already installed!\e[0m"
 fi
 
-# Check if Oh My Zsh is installed
 if [ ! -d "$HOME/.oh-my-zsh" ]; then
-  echo "Installing Oh My Zsh..."
+  echo -e "\e[1;32mInstalling Oh My Zsh...\e[0m"
   sh -c "$(curl -fsSL https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh)"
 else
-  echo "Oh My Zsh is already installed! Skipping..."
+  echo -e "\e[1;33mOh My Zsh is already installed! Skipping...\e[0m"
 fi
 
-# Installing Powerlevel10k for Zsh theme
-echo "Installing Powerlevel10k theme for Zsh..."
+# Install Powerlevel10k Theme
+echo -e "\e[1;34mInstalling Powerlevel10k theme for Zsh...\e[0m"
 git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
 
-
-# Define the path to the .zshrc file
+# Update .zshrc with Powerlevel10k Theme
 ZSHRC_FILE="$HOME/.zshrc"
-
-# Check if the .zshrc file exists
 if [ -f "$ZSHRC_FILE" ]; then
-    # Use sed to find and replace the ZSH_THEME line and create a backup
-    sed -i.bak 's/^ZSH_THEME=.*/ZSH_THEME="powerlevel10k\/powerlevel10k"/' "$ZSHRC_FILE"
-    echo "Updated ZSH_THEME in $ZSHRC_FILE to 'powerlevel10k/powerlevel10k'."
-    echo "A backup of the original .zshrc file has been created as $ZSHRC_FILE.bak."
+  echo -e "\e[1;34mUpdating ZSH_THEME in .zshrc to 'powerlevel10k/powerlevel10k'...\e[0m"
+  sed -i.bak 's/^ZSH_THEME=.*/ZSH_THEME="powerlevel10k\/powerlevel10k"/' "$ZSHRC_FILE"
+  echo -e "\e[1;32mUpdated ZSH_THEME in $ZSHRC_FILE to 'powerlevel10k/powerlevel10k'.\e[0m"
+  echo -e "\e[1;33mA backup of the original .zshrc file has been created as $ZSHRC_FILE.bak.\e[0m"
 else
-    echo "Error: $ZSHRC_FILE does not exist."
+  echo -e "\e[1;31mError: $ZSHRC_FILE does not exist.\e[0m"
 fi
 
-
-
-
-
-fi
-
-# Installing Hyper Terminal
-echo "Checking and Installing Hyper Terminal..."
+# Install Hyper Terminal
+echo -e "\e[1;34mInstalling Hyper Terminal...\e[0m"
 if ! command -v hyper &> /dev/null; then
   wget https://github.com/vercel/hyper/releases/download/v3.4.1/hyper-3.4.1.x86_64.rpm -P ~/Downloads
   sudo dnf install ~/Downloads/hyper-3.4.1.x86_64.rpm -y
 else
-  echo "Hyper Terminal is already installed!"
+  echo -e "\e[1;33mHyper Terminal is already installed!\e[0m"
 fi
 
-
-
-
-# Installing Visual Studio Code
-echo "Checking and Installing Visual Studio Code..."
+# Install Visual Studio Code
+echo -e "\e[1;34mInstalling Visual Studio Code...\e[0m"
 if ! command -v code &> /dev/null; then
   sudo rpm --import https://packages.microsoft.com/keys/microsoft.asc
   echo -e "[code]\nname=Visual Studio Code\nbaseurl=https://packages.microsoft.com/yumrepos/vscode\nenabled=1\ngpgcheck=1\ngpgkey=https://packages.microsoft.com/keys/microsoft.asc" | sudo tee /etc/yum.repos.d/vscode.repo > /dev/null
   sudo dnf install code -y
 else
-  echo "Visual Studio Code is already installed!"
+  echo -e "\e[1;33mVisual Studio Code is already installed!\e[0m"
 fi
 
-# Installing Node.js
-echo "Checking and Installing Node.js..."
+# Install Node.js
+echo -e "\e[1;34mInstalling Node.js...\e[0m"
 if ! command -v node &> /dev/null; then
   sudo dnf install nodejs -y
-  echo "Node.js version: $(node --version)"
+  echo -e "\e[1;32mNode.js version: $(node --version)\e[0m"
 else
-  echo "Node.js is already installed!"
+  echo -e "\e[1;33mNode.js is already installed!\e[0m"
 fi
 
-# Installing Kickstart Neovim distribution
-echo "Installing Kickstart Neovim distribution..."
+# Install Kickstart Neovim
+echo -e "\e[1;34mInstalling Kickstart Neovim distribution...\e[0m"
 git clone https://github.com/nvim-lua/kickstart.nvim.git "${XDG_CONFIG_HOME:-$HOME/.config}"/nvim
 
-# Installing Ruby with RVM
-echo "Installing Ruby..."
+# Install Ruby with RVM
+echo -e "\e[1;34mInstalling Ruby...\e[0m"
 gpg2 --keyserver keyserver.ubuntu.com --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB
 \curl -sSL https://get.rvm.io | bash -s stable --rails
 
-# Installing Rust
-echo "Installing Rust..."
+# Install Rust
+echo -e "\e[1;34mInstalling Rust...\e[0m"
 curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 rustup update
 
-
-# Adding Flathub repository
-echo "Adding Flathub repository..."
+# Install Flatpak Apps
+echo -e "\e[1;34mInstalling Flatpak apps...\e[0m"
 flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 
+FLATPAK_APPS=(
+  org.jdownloader.JDownloader
+  org.qbittorrent.qBittorrent
+  io.github.giantpinkrobots.varia
+  org.onlyoffice.desktopeditors
+  io.github.kukuruzka165.materialgram
+  com.brave.Browser
+  io.github.josephmawa.Egghead
+  io.github.cleomenezesjr.Escambo
+  rest.insomnia.Insomnia
+  us.materialio.Materialious
+  app.zen_browser.zen
+  com.github.huluti.Curtail
+)
 
-# Automatically answer 'yes' for all flatpak installs
-FLATPAK_YES='--assumeyes'
+for app in "${FLATPAK_APPS[@]}"; do
+  if ! flatpak list | grep -q "$app"; then
+    echo -e "\e[1;32mInstalling $app...\e[0m"
+    flatpak install flathub "$app" -y
+  else
+    echo -e "\e[1;33m$app is already installed! Skipping...\e[0m"
+  fi
+done
 
-flatpak install $FLATPAK_YES flathub org.jdownloader.JDownloader
-flatpak install $FLATPAK_YES flathub org.qbittorrent.qBittorrent
-flatpak install $FLATPAK_YES flathub io.github.giantpinkrobots.varia
-flatpak install $FLATPAK_YES flathub org.onlyoffice.desktopeditors
-flatpak install $FLATPAK_YES flathub io.github.kukuruzka165.materialgram
-flatpak install $FLATPAK_YES flathub com.brave.Browser
-flatpak install $FLATPAK_YES flathub io.github.josephmawa.Egghead
-flatpak install $FLATPAK_YES flathub io.github.cleomenezesjr.Escambo
-flatpak install $FLATPAK_YES flathub rest.insomnia.Insomnia
-flatpak install $FLATPAK_YES flathub us.materialio.Materialious
-flatpak install $FLATPAK_YES flathub app.zen_browser.zen
-flatpak install $FLATPAK_YES flathub com.github.huluti.Curtail
-
-# Optional installations: Whaler (for Docker) and Freelens (for Kubernetes)
+# Optional Flatpak Installations
 read -p "Do you want to install Whaler (for Docker)? (yes/no): " install_whaler
-install_whaler=${install_whaler,,}  # Convert input to lowercase
-
-if [[ "$install_whaler" == "y" || "$install_whaler" == "yes" ]]; then
-  flatpak install $FLATPAK_YES flathub com.github.sdv43.whaler
-elif [[ "$install_whaler" == "n" || "$install_whaler" == "no" ]]; then
-  echo "Skipping Whaler installation."
+if [[ "$install_whaler" =~ ^(yes|y)$ ]]; then
+  flatpak install flathub com.github.sdv43.whaler -y
 else
-  echo "Invalid input. Please enter yes or no."
+  echo -e "\e[1;33mSkipping Whaler installation.\e[0m"
 fi
 
 read -p "Do you want to install Freelens (for Kubernetes)? (yes/no): " install_freelens
-install_freelens=${install_freelens,,}
-if [[ "$install_freelens" == "y" || "$install_freelens" == "yes" ]]; then
-  flatpak install $FLATPAK_YES flathub app.freelens.Freelens
-elif [[ "$install_freelens" == "n" || "$install_freelens" == "no" ]]; then
-  echo "Skipping Freelens installation."
+if [[ "$install_freelens" =~ ^(yes|y)$ ]]; then
+  flatpak install flathub app.freelens.Freelens -y
 else
-  echo "Invalid input. Please enter yes or no."
+  echo -e "\e[1;33mSkipping Freelens installation.\e[0m"
 fi
 
+# Final Message
 echo -e "\e[1;32m"
 cat << "EOF"
-
-
 
 ███████╗██╗███╗   ██╗██╗███████╗██╗  ██╗███████╗██████╗
 ██╔════╝██║████╗  ██║██║██╔════╝██║  ██║██╔════╝██╔══██╗
@@ -255,23 +225,5 @@ cat << "EOF"
 
 EOF
 echo -e "\e[0m"
-echo "All installations are completed! Please restart your terminal or system for the changes to take effect."
+echo -e "\e[1;32mAll installations are completed! Please restart your terminal or system for the changes to take effect.\e[0m"
 exit 0
-
-
-
-# Installing Modern Clock for KDE
-# A modern looking clock widget!
-# Clone this repository
-git clone https://github.com/prayag2/kde_modernclock && cd kde_modernclock/
-# Install using the script
-kpackagetool5 -i package
-
-
-
-# download the master folder in Downloads folder
-wget https://github.com/dracula/kitty/archive/master.zip
-cp dracula.conf diff.conf ~/.config/kitty/
-echo "include dracula.conf" >> ~/.config/kitty/kitty.conf
-
-
