@@ -111,18 +111,6 @@ else
   echo -e "\e[1;33mOh My Zsh is already installed! Skipping...\e[0m"
 fi
 
-# Install Powerlevel10k Theme
-echo -e "\e[1;34mInstalling Powerlevel10k theme for Zsh...\e[0m"
-git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
-
-# Installing Modern Clock for KDE
-# A modern looking clock widget!
-# Clone this repository
-git clone https://github.com/prayag2/kde_modernclock && cd kde_modernclock/
-# Install using the script
-kpackagetool5 -i package
-
-
 
 
 # Update .zshrc with Powerlevel10k Theme
@@ -208,6 +196,7 @@ done
 
 # Optional Flatpak Installations
 read -p "Do you want to install Whaler (for Docker)? (yes/no): " install_whaler
+install_whaler=${install_whaler,,}
 if [[ "$install_whaler" =~ ^(yes|y)$ ]]; then
   flatpak install flathub com.github.sdv43.whaler -y
 else
@@ -215,11 +204,39 @@ else
 fi
 
 read -p "Do you want to install Freelens (for Kubernetes)? (yes/no): " install_freelens
+install_freelens=${install_freelens,,}
 if [[ "$install_freelens" =~ ^(yes|y)$ ]]; then
   flatpak install flathub app.freelens.Freelens -y
 else
   echo -e "\e[1;33mSkipping Freelens installation.\e[0m"
 fi
+
+# Installing Modern Clock for KDE
+# A modern looking clock widget!
+# Clone this repository
+read -p "Do you want to install Modern Clock Widget? (yes/no): " install_widget
+install_widget=${install_widget,,}
+if [[ "$install_widget" =~ ^(yes|y)$ ]]; then
+  echo  Cloning the repository
+  git clone https://github.com/prayag2/kde_modernclock && cd kde_modernclock/
+  echo Installing the script
+  kpackagetool5 -i package
+else
+  echo -e "\e[1;33mSkipping Freelens installation.\e[0m"
+fi
+
+
+# Install Powerlevel10k Theme
+read -p "Do you want to install Powerlevel10k theme for Zsh? (yes/no):  " install_powerlevel10k
+install_powerlevel10k=${install_powerlevel10k,,}
+if [[ "$install_powerlevel10k" =~ ^(yes|y)$ ]]; then
+  echo -e "\e[1;34mInstalling Powerlevel10k theme for Zsh...\e[0m"
+  git clone --depth=1 https://github.com/romkatv/powerlevel10k.git "${ZSH_CUSTOM:-$HOME/.oh-my-zsh/custom}/themes/powerlevel10k"
+else
+  echo -e "\e[1;33mSkipping Powerlevel10k installation.\e[0m"
+fi
+
+
 
 # Final Message
 echo -e "\e[1;32m"
