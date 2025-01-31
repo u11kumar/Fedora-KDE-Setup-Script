@@ -133,6 +133,14 @@ else
   echo -e "\e[1;33mHyper Terminal is already installed!\e[0m"
 fi
 
+if ! command -v jdownloader &> /dev/null; then
+
+else
+  echo -e "\e[1;33mJdownloader  is already installed!\e[0m"
+fi
+
+
+
 # Install Visual Studio Code
 echo -e "\e[1;34mInstalling Visual Studio Code...\e[0m"
 if ! command -v code &> /dev/null; then
