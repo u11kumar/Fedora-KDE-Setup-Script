@@ -140,7 +140,7 @@ if ! command -v jdownloader &> /dev/null; then
   wget https://github.com/u11kumar/Fedora-KDE-Setup-Script/blob/main/JDownloader2Setup_unix_nojre.sh -P ~/Downloads
   chmod +x Jdownloader2Setup_unix_nojre.sh
   sudo./JDownloader2Setup_unix_nojre.sh
-  rm JDownloader2Setup_unix_nojre.sh
+  rm ~/Downloads/JDownloader2Setup_unix_nojre.sh
 else
   echo -e "\e[1;33mJdownloader  is already installed!\e[0m"
 fi
@@ -160,6 +160,8 @@ fi
 # Install Node.js
 echo -e "\e[1;34mInstalling Node.js...\e[0m"
 if ! command -v node &> /dev/null; then
+  sudo dnf install -y gcc-c++ make 
+  curl -sL https://rpm.nodesource.com/setup_18.x | sudo -E bash - 
   sudo dnf install nodejs -y
   echo -e "\e[1;32mNode.js version: $(node --version)\e[0m"
 else
