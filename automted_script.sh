@@ -133,8 +133,14 @@ else
   echo -e "\e[1;33mHyper Terminal is already installed!\e[0m"
 fi
 
-if ! command -v jdownloader &> /dev/null; then
 
+# Install JDownloader 
+if ! command -v jdownloader &> /dev/null; then
+  sudo dnf install -y java-latest-openjdk    
+  wget https://github.com/u11kumar/Fedora-KDE-Setup-Script/blob/main/JDownloader2Setup_unix_nojre.sh -P ~/Downloads
+  chmod +x Jdownloader2Setup_unix_nojre.sh
+  sudo./JDownloader2Setup_unix_nojre.sh
+  rm JDownloader2Setup_unix_nojre.sh
 else
   echo -e "\e[1;33mJdownloader  is already installed!\e[0m"
 fi
