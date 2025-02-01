@@ -172,31 +172,53 @@ fi
 echo -e "\e[1;34mInstalling Kickstart Neovim distribution...\e[0m"
 git clone https://github.com/nvim-lua/kickstart.nvim.git "${XDG_CONFIG_HOME:-$HOME/.config}"/nvim
 
+# Installing zsh plugins
+echo -e "\e[1;34mInstalling Zsh Plugins...\e[0m"
+echo -e "\e[1;34mInstalling zsh-history-substring-search...\e[0m"
+git clone https://github.com/zsh-users/zsh-history-substring-search ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-history-substring-search
+echo -e "\e[1;34mInstalling Autoswitch Python Virtualenv...\e[0m"
+git clone "https://github.com/MichaelAquilina/zsh-autoswitch-virtualenv.git" "$ZSH_CUSTOM/plugins/autoswitch_virtualenv"
+echo -e "\e[1;34mInstalling zsh-autosuggestions...\e[0m"
+git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+echo -e "\e[1;34mInstalling zsh-syntax-highlighting...\e[0m"
+git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-~/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+
+
 # Install Ruby with RVM
-echo -e "\e[1;34mInstalling Ruby...\e[0m"
-gpg2 --keyserver keyserver.ubuntu.com --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB
-\curl -sSL https://get.rvm.io | bash -s stable --rails
+if ! command -v ruby &> /dev/null; then
+  echo -e "\e[1;34mInstalling Ruby...\e[0m"
+  gpg2 --keyserver keyserver.ubuntu.com --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB
+  \curl -sSL https://get.rvm.io | bash -s stable --rails
+  echo -e "\e[1;32mRuby version: $(ruby --version)\e[0m"
+else
+  echo -e "\e[1;33mRuby is already installed!\e[0m"
+fi
+
 
 # Install Rust
-echo -e "\e[1;34mInstalling Rust...\e[0m"
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-rustup update
+if ! command -v ruby &> /dev/null; then
+  echo -e "\e[1;34mInstalling Rust...\e[0m"
+  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+  rustup update
+  echo -e "\e[1;32mRust version: $(rustc --version)\e[0m"
+else
+  echo -e "\e[1;33mRust is already installed!\e[0m"
+fi
+
+
 
 # Install Flatpak Apps
 echo -e "\e[1;34mInstalling Flatpak apps...\e[0m"
 flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
 
 FLATPAK_APPS=(
-  org.jdownloader.JDownloader
   org.qbittorrent.qBittorrent
-  io.github.giantpinkrobots.varia
   org.onlyoffice.desktopeditors
   io.github.kukuruzka165.materialgram
   com.brave.Browser
   io.github.josephmawa.Egghead
   io.github.cleomenezesjr.Escambo
   rest.insomnia.Insomnia
-  us.materialio.Materialious
   app.zen_browser.zen
   com.github.huluti.Curtail
 )
@@ -215,6 +237,7 @@ read -p "Do you want to install Whaler (for Docker)? (yes/no): " install_whaler
 install_whaler=${install_whaler,,}
 if [[ "$install_whaler" =~ ^(yes|y)$ ]]; then
   flatpak install flathub com.github.sdv43.whaler -y
+  echo -e "\e[1;33mWhaler installed.\e[0m"
 else
   echo -e "\e[1;33mSkipping Whaler installation.\e[0m"
 fi
@@ -223,8 +246,18 @@ read -p "Do you want to install Freelens (for Kubernetes)? (yes/no): " install_f
 install_freelens=${install_freelens,,}
 if [[ "$install_freelens" =~ ^(yes|y)$ ]]; then
   flatpak install flathub app.freelens.Freelens -y
+  echo -e "\e[1;33mFreelens installed.\e[0m"
 else
   echo -e "\e[1;33mSkipping Freelens installation.\e[0m"
+fi
+
+read -p "Do you want to install JDownloader? (yes/no): " install_jdownloader
+install_jdownloader=${install_jdownloader,,}
+if [[ "$install_jdownloader" =~ ^(yes|y)$ ]]; then
+  flatpak install flathub org.jdownloader.JDownloader -y
+  echo -e "\e[1;33mJDownloader installed.\e[0m"
+else
+  echo -e "\e[1;33mSkipping JDownloader installation.\e[0m"
 fi
 
 # Installing Modern Clock for KDE
@@ -268,5 +301,7 @@ cat << "EOF"
 
 EOF
 echo -e "\e[0m"
+echo -e "\e[1;32mPlease update the plugin in .zshrc [plugins=( zsh-history-substring-search  git autoswitch_virtualenv $plugins z zsh-autosuggestions  zsh-syntax-highlighting)
+] \e[0m"
 echo -e "\e[1;32mAll installations are completed! Please restart your terminal or system for the changes to take effect.\e[0m"
 exit 0
