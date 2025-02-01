@@ -36,6 +36,19 @@ is_package_installed() {
   fi
 }
 
+
+# Update System
+read -p "Do you want to update the system before installation ? (yes/no): " install_update
+install_update=${install_update,,}
+if [[ "$install_ultramarine" =~ ^(yes|y)$ ]]; then
+  echo -e "\e[1;34mUpdating system packages...\e[0m"
+  sudo dnf update -y && sudo dnf upgrade -y
+else
+  echo -e "\e[1;33mSkipping Updating system packages....\e[0m"
+fi
+
+
+
 # Backup System
 echo -e "\e[1;33mWould you like to create a system backup before proceeding with the setup? (yes/no)\e[0m"
 read backup_choice
@@ -65,13 +78,15 @@ else
   echo -e "\e[1;33mSkipping backup process and proceeding with the setup...\e[0m"
 fi
 
-# Update System
-echo -e "\e[1;34mUpdating system packages...\e[0m"
-sudo dnf update -y && sudo dnf upgrade -y
-
 # Run UltraMarine Linux Migration Script
-echo -e "\e[1;34mRunning UltraMarine Linux migration script...\e[0m"
-bash <(curl -s https://ultramarine-linux.org/migrate.sh)
+read -p "Do you want to switch UltraMarine Linux ? (yes/no): " install_ultramarine
+install_ultramarine=${install_ultramarine,,}
+if [[ "$install_ultramarine" =~ ^(yes|y)$ ]]; then
+   echo -e "\e[1;34mRunning UltraMarine Linux migration script...\e[0m"
+  bash <(curl -s https://ultramarine-linux.org/migrate.sh)
+else
+  echo -e "\e[1;33mSkipping UltraMarine Linux migration script....\e[0m"
+fi
 
 # Install Essential Packages
 echo -e "\e[1;34mInstalling essential packages...\e[0m"
@@ -185,31 +200,59 @@ git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:
 
 
 # Install Ruby with RVM
-if ! command -v ruby &> /dev/null; then
+echo -e "\e[1;34mInstall Ruby with RVM...\e[0m"
+read -p "Do you want to install Ruby Language ? (yes/no): " install_ruby
+install_ruby=${install_ruby,,}
+if [[ "$install_ruby" =~ ^(yes|y)$ ]];then
+  if ! command -v ruby &> /dev/null; then
   echo -e "\e[1;34mInstalling Ruby...\e[0m"
   gpg2 --keyserver keyserver.ubuntu.com --recv-keys 409B6B1796C275462A1703113804BB82D39DC0E3 7D2BAF1CF37B13E2069D6956105BD0E739499BDB
   \curl -sSL https://get.rvm.io | bash -s stable --rails
   echo -e "\e[1;32mRuby version: $(ruby --version)\e[0m"
+  else
+    echo -e "\e[1;33mRuby is already installed!\e[0m"
+  fi
 else
-  echo -e "\e[1;33mRuby is already installed!\e[0m"
+   echo -e "\e[1;33mSkipping Ruby Language Installtion....\e[0m"
 fi
 
 
 # Install Rust
-if ! command -v ruby &> /dev/null; then
-  echo -e "\e[1;34mInstalling Rust...\e[0m"
-  curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-  rustup update
-  echo -e "\e[1;32mRust version: $(rustc --version)\e[0m"
+echo -e "\e[1;34mInstall Rust...\e[0m"
+read -p "Do you want to install Rust Language ? (yes/no): " install_rust
+install_rust=${install_rust,,}
+if [[ "$install_rust" =~ ^(yes|y)$ ]];then
+  if ! command -v ruby &> /dev/null; then
+    echo -e "\e[1;34mInstalling Rust...\e[0m"
+    curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+    rustup update
+    echo -e "\e[1;32mRust version: $(rustc --version)\e[0m"
+  else
+    echo -e "\e[1;33mRust is already installed!\e[0m"
+  fi
 else
-  echo -e "\e[1;33mRust is already installed!\e[0m"
+   echo -e "\e[1;33mSkipping Rust Language Installtion....\e[0m"
 fi
-
 
 
 # Install Flatpak Apps
 echo -e "\e[1;34mInstalling Flatpak apps...\e[0m"
 flatpak remote-add --if-not-exists flathub https://dl.flathub.org/repo/flathub.flatpakrepo
+
+echo -e "\e[1;32mList of flatpak apps that will be installed
+1.qBittorrent (For torrents)
+2.OnlyOffice (For Office Work)
+3.Materialgram (alternative Telegram client)
+4.Brave Browser
+5.Egghead (Quizz App)
+6.Escambo (Simple Api Testing)
+7.Insomnia (Api Testing)
+8.Zen Browser
+9.Curtail (Compress your images)
+10.Warehouse (Manage all things Flatpak)
+....\e[0m"
+read -p "Do you want to update the system before installation ? (yes/no): " install_flatpak_apps
+install_flatpak_apps=${install_flatpak_apps,,}
 
 FLATPAK_APPS=(
   org.qbittorrent.qBittorrent
@@ -221,6 +264,7 @@ FLATPAK_APPS=(
   rest.insomnia.Insomnia
   app.zen_browser.zen
   com.github.huluti.Curtail
+  io.github.flattool.Warehouse
 )
 
 for app in "${FLATPAK_APPS[@]}"; do
