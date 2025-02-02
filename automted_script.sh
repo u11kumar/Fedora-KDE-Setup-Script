@@ -250,6 +250,12 @@ echo -e "\e[1;32mList of flatpak apps that will be installed
 8.Zen Browser
 9.Curtail (Compress your images)
 10.Warehouse (Manage all things Flatpak)
+11.Foliate (Read e-books in style)
+12.Spider (Install web apps)
+13.Planify (Forget about forgetting things)
+14.Khronos (Log the time it took to do tasks)
+15.Notejot (Jot your Ideas)
+16.Kolibri (Offline Learning Platform)
 ....\e[0m"
 read -p "Do you want to update the system before installation ? (yes/no): " install_flatpak_apps
 install_flatpak_apps=${install_flatpak_apps,,}
@@ -265,6 +271,12 @@ FLATPAK_APPS=(
   app.zen_browser.zen
   com.github.huluti.Curtail
   io.github.flattool.Warehouse
+  com.github.johnfactotum.Foliate
+  io.github.zaedus.spider
+  io.github.alainm23.planify
+  io.github.lainsce.Khronos
+  io.github.lainsce.Notejot
+  org.learningequality.Kolibri
 )
 
 for app in "${FLATPAK_APPS[@]}"; do
